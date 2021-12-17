@@ -53,7 +53,8 @@ class LeadRetrieveResource(Resource):
 
 
 class LeadSendEmailResource(Resource):
+    
     @jwt_required()
     @verify_role_admin
-    def send(self):
+    def post(self):
         return make_response(LeadService.newsletter_info())

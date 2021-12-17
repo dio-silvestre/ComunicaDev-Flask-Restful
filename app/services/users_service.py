@@ -1,3 +1,4 @@
+from sqlalchemy.sql.elements import and_
 from app.exc import DataNotFound, DataAlreadyRegistered, InvalidPassword, EmailVerifiedError, UnauthorizedAccessError, InvalidKey
 from app.models.users_model import UserModel
 from app.models.user_token_model import UserTokenModel
@@ -80,8 +81,8 @@ class UserService(BaseServices):
         token = UserTokenModel.query.filter_by(token=token).first()
 
         if token:
-            info = {"verified": True}
-            user = UserModel.query.filter_by(id=token.user_id).update(info)
+            user = UserModel.query.filter_by(id=token.user_id).first()
+            setattr(user, 'verified', True)
             user.save()
             user_updated = UserModel.query.filter_by(id=token.user_id).first()
 
@@ -206,8 +207,8 @@ class UserService(BaseServices):
 
             reset_code = str(uuid4())[0:5]
             send_reset_password_code(user.name, user.email, reset_code)
-            info = {"reset_code": reset_code}
-            user_update = UserModel.query.filter_by(email=data['email']).update(info)
+            user_update = UserModel.query.filter_by(email=data['email']).first()
+            setattr(user_update, 'reset_code', reset_code)
             
             user_update.save()
 
@@ -224,10 +225,10 @@ class UserService(BaseServices):
 
         data = parser.parse_args(strict=True)
 
-        user_to_update = UserModel.query.filter_by(reset_code=data['reset_code']).first()
+        user_to_update = UserModel.query.filter(and_(UserModel.reset_code==data['reset_code'], UserModel.email==data['email'])).first()
 
         if not user_to_update:
-            raise DataNotFound('User')
+            raise DataNotFound('Reset code or email')
 
         setattr(user_to_update, 'password', data['new_password'])
         

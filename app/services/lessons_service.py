@@ -1,6 +1,7 @@
 from app.exc import DataNotFound
 from app.models.lessons_model import LessonModel
 from app.models.users_model import UserModel
+from app.models.categories_model import CategoryModel
 from app.models.user_lesson_model import UserLessonModel
 from flask_restful import reqparse
 from flask import jsonify
@@ -23,11 +24,21 @@ class LessonService(BaseServices):
         parser.add_argument("description", type=str, required=True)
         parser.add_argument("url_video", type=str, required=True)
         parser.add_argument("is_premium", type=bool, required=True)
-        parser.add_argument("category", type=dict, required=True)
+        parser.add_argument("category", type=str, required=True)
 
         data = parser.parse_args(strict=True)
 
-        new_lesson: LessonModel = LessonModel(**data)
+        category_type = data.pop('category')
+
+        category_found = CategoryModel.query.filter_by(type=category_type).first()
+
+        if not category_found:
+            new_category = CategoryModel(type=category_type, description="")
+            new_category.save()
+
+        category_found = CategoryModel.query.filter_by(type=category_type).first()
+
+        new_lesson = LessonModel(category_id=category_found.id, **data)
         new_lesson.save()
 
         return jsonify(new_lesson), HTTPStatus.CREATED
@@ -45,9 +56,23 @@ class LessonService(BaseServices):
         parser.add_argument("description", type=str, store_missing=False)
         parser.add_argument("url_video", type=str, store_missing=False)
         parser.add_argument("is_premium", type=bool, store_missing=False)
-        parser.add_argument("category", type=dict, store_missing=False)
+        parser.add_argument("category", type=str, store_missing=False)
 
         data = parser.parse_args(strict=True)
+
+        if 'category' in data.keys():
+            category_type = data.pop('category')
+
+            category_found = CategoryModel.query.filter_by(type=category_type).first()
+
+            if not category_found:
+                new_category = CategoryModel(type=category_type, description="")
+                new_category.save()
+
+            category_found = CategoryModel.query.filter_by(type=category_type).first()
+
+            data['category_id'] = category_found.id
+
 
         for key, value in data.items():
             setattr(lesson, key, value)
@@ -75,24 +100,25 @@ class LessonService(BaseServices):
     def list_my_lessons():
         user_logged = get_jwt_identity()
 
-        user_found: UserModel = UserModel.query.get(user_logged['id'])
+        user_lesson: UserLessonModel = UserLessonModel.query.filter_by(user_id=user_logged['id']).all()
 
-        if not user_found:
-            raise DataNotFound('User')
+        if not user_lesson:
+            raise DataNotFound('Lessons')
 
-        return jsonify(user_found.lessons), HTTPStatus.OK
+        return jsonify(user_lesson), HTTPStatus.OK
 
 
     @staticmethod
     def update_finished(id):
         user = get_jwt_identity()
-        result = {"finished": True}
         user_lesson = UserLessonModel.query.filter(
                 and_(UserLessonModel.lesson_id==id, UserLessonModel.user_id==user['id'])
-            ).update(result) 
+            ).first()
         
         if not user_lesson:
             return {"error": "User and lesson don't match!"}, HTTPStatus.NOT_FOUND
+
+        setattr(user_lesson, 'finished', True)
 
         user_lesson.save()
         

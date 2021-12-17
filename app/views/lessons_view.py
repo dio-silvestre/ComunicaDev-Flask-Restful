@@ -60,10 +60,12 @@ class LessonListByUserResource(Resource):
             return make_response(LessonService.list_my_lessons())
         except KeyError:
             return {'error': 'Invalid token.'}, HTTPStatus.UNAUTHORIZED
+        except DataNotFound as e:
+            return e.message, e.code
 
 
 class LessonUpdateFinishedResource(Resource):
 
     @jwt_required()
-    def get(self, id):
+    def patch(self, id):
         return make_response(LessonService.update_finished(id))

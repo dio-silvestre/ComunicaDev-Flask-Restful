@@ -14,9 +14,10 @@ def init_app(app: Flask) -> None:
     from app.models.captchas_model import CaptchaModel
 
 
-    from app.views.address_view import AddressResource, AddressRetrieveResource
+    from app.views.address_view import AddressResource, AddressRetrieveResource, AddressPersonalResource
     api.add_resource(AddressResource, "/api/address", endpoint="ADDRESSES")
     api.add_resource(AddressRetrieveResource, "/api/address/<int:address_id>", endpoint="ADDRESS_ID")
+    api.add_resource(AddressPersonalResource, "/api/address/personal", endpoint="ADDRESS_PERSONAL")
 
 
     from app.views.leads_view import LeadResource, LeadRetrieveResource, LeadSendEmailResource
@@ -42,7 +43,7 @@ def init_app(app: Flask) -> None:
 
 
     from app.views.captchas_view import CaptchaGenerateResource, CaptchaValidateResource
-    api.add_resource(CaptchaGenerateResource, "/api/captchas/generate/<int:num_chars>", endpoint="CAPTCHA_GENERATE")
+    api.add_resource(CaptchaGenerateResource, "/api/captchas/generate", endpoint="CAPTCHA_GENERATE")
     api.add_resource(CaptchaValidateResource, "/api/captchas/validate", endpoint="CAPTCHA_VALIDATE")
 
 

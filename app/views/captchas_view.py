@@ -8,8 +8,8 @@ from app.services.captchas_service import CaptchaService
 class CaptchaGenerateResource(Resource):
 
 
-    def post(self, num_chars):
-        return make_response(CaptchaService.generate_captcha(num_chars))
+    def get(self):
+        return make_response(CaptchaService.generate_captcha())
 
 
 class CaptchaValidateResource(Resource):

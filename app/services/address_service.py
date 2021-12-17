@@ -4,6 +4,7 @@ from flask_restful import reqparse
 from flask_jwt_extended import get_jwt_identity
 from flask import jsonify
 from http import HTTPStatus
+from app.models.users_model import UserModel
 from app.services.helper import BaseServices
 
 
@@ -23,7 +24,6 @@ class AddressService(BaseServices):
         parser.add_argument("city", type=str, required=True)
         parser.add_argument("state", type=str, required=True)
         parser.add_argument("country", type=str, required=True)
-        parser.add_argument("user_id", type=int, required=True)
 
         data = parser.parse_args(strict=True)
 
@@ -77,6 +77,18 @@ class AddressService(BaseServices):
             raise UnauthorizedAccessError
 
         return jsonify(address), HTTPStatus.OK
+
+
+    @staticmethod
+    def get_my_addresses():
+        user_logged = get_jwt_identity()
+        
+        user_found: UserModel = UserModel.query.get(user_logged['id'])
+
+        if not user_found:
+            raise DataNotFound('User')
+
+        return jsonify(user_found.addresses), HTTPStatus.OK
 
     
     @staticmethod

@@ -30,6 +30,6 @@ class LessonModel(db.Model, BaseModel):
     is_premium = Column(Boolean, nullable=False)
     category_id = Column(Integer, db.ForeignKey('categories.id'), nullable=False)
 
-    category = relationship('CategoryModel', backref="lessons", uselist=False)
+    category = relationship('CategoryModel', uselist=False)
 
     users = relationship("UserModel", secondary="user_lesson", viewonly=True)

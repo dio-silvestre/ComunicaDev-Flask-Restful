@@ -40,7 +40,7 @@ class AddressRetrieveResource(Resource):
             return {'error': 'Invalid token.'}, HTTPStatus.UNAUTHORIZED
         except UnauthorizedAccessError as e:
             return e.message, e.code
-    
+
 
     @jwt_required()
     def patch(self, address_id):
@@ -58,6 +58,20 @@ class AddressRetrieveResource(Resource):
     def delete(self, address_id):
         try:
             return make_response(AddressService.delete(address_id))
+        except DataNotFound as e:
+            return e.message, e.code
+        except KeyError:
+            return {'error': 'Invalid token.'}, HTTPStatus.UNAUTHORIZED
+        except UnauthorizedAccessError as e:
+            return e.message, e.code
+
+
+class AddressPersonalResource(Resource):
+
+    @jwt_required()
+    def get(self):
+        try:
+            return make_response(AddressService.get_my_addresses())
         except DataNotFound as e:
             return e.message, e.code
         except KeyError:
