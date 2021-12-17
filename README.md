@@ -1,12 +1,12 @@
 # Welcome to Comunica Dev API
 
-The Comunica Dev API is a aplications based on SQL and Flask, to manage the Comunica Dev aplication.
+The Comunica Dev API is a aplications based on SQL and Flask, to manage the Comunica Dev application.
 
 To use follow the instructions below.
 
 The entire application is contained within the `app` folder.
 
-`riquerements.txt` is a colletction with all frameworks needed to run te aplication.
+`requirements.txt` is a colletction with all frameworks needed to run te aplication.
 
 The `migrations` folder heave the database configs.
 
