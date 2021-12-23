@@ -1,16 +1,16 @@
 # Welcome to Comunica Dev API
 
-The Comunica Dev API is a aplications based on SQL and Flask, to manage the Comunica Dev application.
+The Comunica Dev API is an application based on SQL and Flask, to manage the Comunica Dev application.
 
-To use follow the instructions below.
+To use, follow the instructions below.
 
 The entire application is contained within the `app` folder.
 
-`requirements.txt` is a colletction with all frameworks needed to run te aplication.
+`requirements.txt` is a collection with all frameworks needed to run te application.
 
-The `migrations` folder heave the database configs.
+The `migrations` folder have the database configs.
 
-IMPORTANT: Don't forget populate your `.env` file according the `.env.example` file.
+IMPORTANT: Don't forget to populate your `.env` file according to the `.env.example` file.
 
 
     [ BASE URL: https://comunica-dev-api.herokuapp.com/api ]
@@ -22,7 +22,7 @@ After cloning the project and accessing the directory, create and start your vir
     
     source venv/bin/activate
 
-To init the aplication run those commands in your terminal and after that start your virtual enviroment:
+To init the application run those commands in your terminal and after that start your virtual environment:
 
     pip install -r requirements.txt
 ##
